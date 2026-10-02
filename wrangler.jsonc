@@ -1,5 +1,9 @@
 {
   "name": "englishstudy-site",
   "compatibility_date": "2026-10-01",
-  "assets": { "directory": "." }
+  "assets": { "directory": "." },
+  "routes": [
+    { "pattern": "englishstudy.kr", "custom_domain": true },
+    { "pattern": "www.englishstudy.kr", "custom_domain": true }
+  ]
 }
