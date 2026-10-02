@@ -1,7 +1,13 @@
 {
   "name": "englishstudy-site",
   "compatibility_date": "2026-10-01",
-  "assets": { "directory": "." },
+  "main": "src/worker.js",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": ["/apps/*", "/api/*"]
+  },
+  // 판매를 열 때 여기에 KV를 붙인다: "kv_namespaces": [{ "binding": "KV", "id": "<ID>" }],
   "routes": [
     { "pattern": "englishstudy.kr", "custom_domain": true },
     { "pattern": "www.englishstudy.kr", "custom_domain": true }

@@ -2,4 +2,10 @@
 .wrangler
 wrangler.jsonc
 .assetsignore
+.gitignore
 README.md
+src
+.dev.vars
+node_modules
+package.json
+package-lock.json

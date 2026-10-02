@@ -1,0 +1,24 @@
+{
+  "name": "VOA 영어 섀도잉 by Jay Han",
+  "short_name": "VOA 섀도잉",
+  "description": "VOA 뉴스로 15분 영어 스피킹 훈련",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#185FA5",
+  "theme_color": "#185FA5",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

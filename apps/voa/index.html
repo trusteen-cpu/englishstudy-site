@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#185FA5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="VOA 섀도잉">
+<title>VOA 영어 섀도잉 by Jay Han</title>
+<style>
+:root{
+  --blue:#185FA5;--blue-dark:#0C447C;--blue-light:#E6F1FB;
+  --green:#3B6D11;--green-light:#EAF3DE;
+  --red:#A32D2D;--red-light:#FCEBEB;
+  --amber:#854F0B;--amber-light:#FAEEDA;
+  --purple:#534AB7;--purple-light:#EEEDFE;
+  --bg:#F7F7F5;--card:#FFFFFF;
+  --border:rgba(0,0,0,0.1);--text:#444441;
+  --muted:#888780;--hint:#B4B2A9;
+  --r-sm:8px;--r-md:12px;--r-lg:16px;
+  --shadow:0 1px 4px rgba(0,0,0,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:3rem;}
+
+.header{background:var(--blue);color:#fff;padding:1rem 1.25rem 1.25rem;position:sticky;top:0;z-index:10;}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;}
+.logo{font-size:16px;font-weight:700;line-height:1.3;}
+.logo .sub{opacity:0.7;font-weight:400;font-size:11px;display:block;margin-top:2px;}
+.logo .by{opacity:0.85;font-weight:500;font-size:11px;color:#FFD700;margin-top:1px;display:block;}
+.date-badge{font-size:12px;padding:4px 10px;background:rgba(255,255,255,0.2);border-radius:99px;white-space:nowrap;}
+.tabs{display:flex;gap:4px;background:rgba(255,255,255,0.15);border-radius:var(--r-sm);padding:3px;}
+.tab{flex:1;padding:6px 4px;font-size:13px;font-weight:500;border:none;background:transparent;color:rgba(255,255,255,0.7);border-radius:6px;cursor:pointer;transition:all 0.15s;}
+.tab.active{background:#fff;color:var(--blue);}
+
+.content{padding:1rem;max-width:500px;margin:0 auto;}
+.card{background:var(--card);border-radius:var(--r-md);border:0.5px solid var(--border);box-shadow:var(--shadow);padding:1rem 1.25rem;margin-bottom:0.875rem;}
+
+.ep-label{font-size:11px;color:var(--hint);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.03em;}
+.ep-title{font-size:15px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:6px;}
+.ep-meta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.dot{width:3px;height:3px;border-radius:50%;background:var(--hint);}
+
+.prog-wrap{margin-bottom:0.875rem;}
+.prog-top{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;}
+.prog-bar{height:4px;background:#E8E8E6;border-radius:99px;}
+.prog-fill{height:100%;background:var(--blue);border-radius:99px;transition:width 0.4s ease;}
+
+.phase-banner{text-align:center;padding:0.75rem 1rem;border-radius:var(--r-md);margin-bottom:0.875rem;font-size:14px;font-weight:600;transition:all 0.3s;}
+.phase-listen{background:var(--blue-light);color:var(--blue);}
+.phase-kor{background:var(--green-light);color:var(--green);}
+.phase-shadow{background:var(--red-light);color:var(--red);}
+.phase-done{background:var(--green-light);color:var(--green);}
+
+.sent-card{background:#F7F9FC;border:1px solid #E0EAF4;border-radius:var(--r-md);padding:1.25rem;margin-bottom:0.875rem;min-height:140px;}
+.sent-num{font-size:11px;color:var(--hint);margin-bottom:0.75rem;font-weight:500;}
+.eng{font-size:17px;font-weight:600;color:var(--text);line-height:1.65;margin-bottom:0.875rem;min-height:52px;transition:all 0.35s;}
+.eng.blur{filter:blur(6px);opacity:0.3;user-select:none;}
+.kor{font-size:14px;color:var(--muted);line-height:1.7;min-height:44px;transition:all 0.35s;border-top:1px solid #E0EAF4;padding-top:0.75rem;}
+.kor.blur{filter:blur(6px);opacity:0.3;user-select:none;}
+
+.toggle-row{display:flex;gap:8px;margin-bottom:0.875rem;}
+.tog{flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s;}
+.tog.on{background:var(--blue-light);color:var(--blue);border-color:#B5D4F4;}
+
+.rep-row{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#F7F7F5;border-radius:var(--r-sm);margin-bottom:0.75rem;border:1px solid var(--border);}
+.rep-label{font-size:12px;color:var(--muted);font-weight:500;}
+.rep-dots{display:flex;gap:8px;}
+.rd{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:#E8E8E6;color:var(--hint);transition:all 0.2s;}
+.rd.ok{background:var(--green);color:#fff;}
+.rd.on{background:var(--red);color:#fff;animation:pulse 0.8s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+
+.score-wrap{margin-bottom:0.875rem;padding:1rem 1.25rem;border-radius:var(--r-md);border:1px solid var(--border);background:var(--card);text-align:center;animation:fadeIn 0.4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.score-grade{font-size:30px;font-weight:700;margin-bottom:4px;}
+.score-label{font-size:13px;color:var(--muted);margin-bottom:10px;}
+.score-bar-wrap{height:8px;background:#E8E8E6;border-radius:99px;overflow:hidden;margin-bottom:10px;}
+.score-bar{height:100%;border-radius:99px;transition:width 0.8s ease;}
+.score-tip{font-size:12px;color:var(--muted);line-height:1.6;}
+.grade-poor{color:#A32D2D;}
+.grade-fair{color:#854F0B;}
+.grade-good{color:#185FA5;}
+.grade-great{color:#3B6D11;}
+.grade-excellent{color:#534AB7;}
+.bar-poor{background:#E24B4A;}
+.bar-fair{background:#EF9F27;}
+.bar-good{background:#378ADD;}
+.bar-great{background:#639922;}
+.bar-excellent{background:#7F77DD;}
+
+.countdown{text-align:center;font-size:42px;font-weight:700;color:var(--blue);margin:0.5rem 0;min-height:56px;}
+.status{text-align:center;font-size:13px;color:var(--hint);margin-bottom:0.75rem;min-height:20px;font-weight:500;line-height:1.5;}
+.status.go{color:var(--blue);}
+.status.rec{color:var(--red);}
+.status.ok{color:var(--green);}
+.status.warn{color:var(--amber);}
+
+.ctrls{display:flex;gap:10px;margin-bottom:0.875rem;}
+.cbtn{flex:1;padding:13px 8px;border-radius:var(--r-md);border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all 0.15s;box-shadow:var(--shadow);}
+.cbtn:active{transform:scale(0.96);}
+.cbtn.pri{background:var(--blue);color:#fff;border-color:transparent;flex:2;font-size:15px;}
+.cbtn.pri:active{background:var(--blue-dark);}
+.cbtn.rec-on{background:var(--red);color:#fff;border-color:transparent;}
+.cbtn:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
+
+.nav-row{display:flex;gap:6px;margin-bottom:0.875rem;}
+.nbtn{flex:1;padding:10px 6px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all 0.15s;}
+.nbtn:disabled{opacity:0.3;cursor:default;}
+.nbtn.restart{color:var(--blue);border-color:#B5D4F4;}
+
+.act-bar{display:flex;gap:6px;padding-top:0.875rem;border-top:1px solid var(--border);}
+.abtn{flex:1;padding:9px 3px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:11px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all 0.15s;}
+.abtn:active{background:var(--bg);}
+
+.ep-list{display:flex;flex-direction:column;gap:8px;}
+.ep-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:0.875rem 1rem;cursor:pointer;transition:all 0.15s;box-shadow:var(--shadow);}
+.ep-item:active{transform:scale(0.99);}
+.ep-item.cur{border-color:var(--blue);border-width:1.5px;}
+.ep-item-date{font-size:11px;color:var(--hint);margin-bottom:3px;}
+.ep-item-title{font-size:14px;font-weight:600;color:var(--text);line-height:1.4;}
+.ep-item-meta{font-size:11px;color:var(--hint);margin-top:3px;}
+
+.guide-step{display:flex;gap:12px;align-items:flex-start;padding:0.875rem 0;border-bottom:1px solid var(--border);}
+.guide-step:last-child{border-bottom:none;}
+.step-num{width:28px;height:28px;border-radius:50%;flex-shrink:0;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
+.step-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.5;}
+
+.loading-view{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.spinner{width:28px;height:28px;border:3px solid #E8E8E6;border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 1rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.error-view{text-align:center;padding:2rem 1rem;color:var(--red);line-height:1.7;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">
+      🎙 VOA 영어 섀도잉
+      <span class="sub">15분 스피킹 훈련</span>
+      <span class="by">by Jay Han</span>
+    </div>
+    <div class="date-badge" id="today-date"></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('learn')" id="tab-learn">학습하기</button>
+    <button class="tab" onclick="showTab('list')" id="tab-list">에피소드</button>
+    <button class="tab" onclick="showTab('guide')" id="tab-guide">사용법</button>
+  </div>
+</div>
+
+<div class="content">
+  <div id="view-learn">
+    <div id="loading" class="loading-view">
+      <div class="spinner"></div>에피소드 불러오는 중...
+    </div>
+    <div id="error-view" class="error-view" style="display:none;">
+      episodes.json 파일을 찾을 수 없습니다.<br>Netlify에 파일이 올라갔는지 확인해 주세요.
+    </div>
+    <div id="learn-content" style="display:none;">
+
+      <div class="card">
+        <div class="ep-label">VOA Learning English · 오늘의 에피소드</div>
+        <div class="ep-title" id="ep-title">—</div>
+        <div class="ep-meta">
+          <span id="ep-date">—</span>
+          <div class="dot"></div>
+          <span id="ep-count">—</span>
+          <div class="dot"></div>
+          <span>약 15분</span>
+        </div>
+      </div>
+
+      <div class="prog-wrap">
+        <div class="prog-top">
+          <span id="prog-txt">문장 1 / 1</span>
+          <span id="prog-pct">0%</span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+
+      <div class="phase-banner phase-listen" id="phase-banner">▶ 시작 버튼을 눌러주세요</div>
+
+      <div class="sent-card">
+        <div class="sent-num" id="snum">문장 1</div>
+        <div class="eng blur" id="eng">—</div>
+        <div class="kor blur" id="kor">—</div>
+      </div>
+
+      <div class="toggle-row">
+        <button class="tog" id="btn-eng" onclick="toggleEng()">👁 영어 자막</button>
+        <button class="tog" id="btn-kor" onclick="toggleKor()">🇰🇷 한글 번역</button>
+      </div>
+
+      <div class="rep-row" id="rep-row" style="display:none;">
+        <span class="rep-label">🎙 따라하기</span>
+        <div class="rep-dots">
+          <div class="rd" id="rd0">1</div>
+          <div class="rd" id="rd1">2</div>
+          <div class="rd" id="rd2">3</div>
+        </div>
+      </div>
+
+      <div class="score-wrap" id="score-wrap" style="display:none;">
+        <div class="score-grade" id="score-grade">—</div>
+        <div class="score-label" id="score-label">—</div>
+        <div class="score-bar-wrap">
+          <div class="score-bar" id="score-bar" style="width:0%"></div>
+        </div>
+        <div class="score-tip" id="score-tip">—</div>
+      </div>
+
+      <div class="countdown" id="countdown"></div>
+      <div class="status" id="status">▶ 시작 버튼을 눌러주세요</div>
+
+      <div class="ctrls">
+        <button class="cbtn" id="replay-btn" onclick="replayAudio()" title="다시 듣기" disabled>↺</button>
+        <button class="cbtn pri" id="main-btn" onclick="handleMain()">
+          <span id="main-icon">▶</span>
+          <span id="main-lbl">시작</span>
+        </button>
+        <button class="cbtn" id="rec-btn" onclick="handleRec()" disabled>🎙</button>
+      </div>
+
+      <div class="nav-row">
+        <button class="nbtn restart" onclick="restartSentence()">↺ 첫 문장</button>
+        <button class="nbtn" id="prev-btn" onclick="prevS()" disabled>← 이전</button>
+        <button class="nbtn" id="next-btn" onclick="nextS()">다음 문장 →</button>
+      </div>
+
+      <div class="card">
+        <div class="act-bar">
+          <button class="abtn" onclick="skipPhase()">⏭ 단계건너뛰기</button>
+          <button class="abtn" onclick="readAll()">📋 전체읽기</button>
+          <button class="abtn" onclick="doShare()">📤 공유</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-list" style="display:none;">
+    <div class="ep-list" id="ep-list"></div>
+  </div>
+
+  <div id="view-guide" style="display:none;">
+    <div class="card">
+      <div style="font-size:15px;font-weight:700;margin-bottom:0.875rem;">15분 강제 섀도잉 훈련법</div>
+      <div class="guide-step"><div class="step-num">1</div><div><div class="step-title">👂 듣기</div><div class="step-desc">자막 없이 원어민 음성을 집중해서 듣습니다. 자동으로 다음 단계로 넘어갑니다.</div></div></div>
+      <div class="guide-step"><div class="step-num">2</div><div><div class="step-title">👁 영어 자막 확인</div><div class="step-desc">영어 자막이 표시되며 음성이 한 번 더 재생됩니다.</div></div></div>
+      <div class="guide-step"><div class="step-num">3</div><div><div class="step-title">🇰🇷 한글 번역 확인</div><div class="step-desc">한글 번역이 표시됩니다. 5초 후 자동으로 넘어갑니다.</div></div></div>
+      <div class="guide-step"><div class="step-num">4</div><div><div class="step-title">🎙 따라하기 3회 + 점수</div><div class="step-desc">녹음 버튼을 누르고 크게 따라 말하세요. 매회 Poor~Excellent 5단계 점수가 나옵니다!</div></div></div>
+      <div class="guide-step"><div class="step-num" style="background:var(--green);">✓</div><div><div class="step-title">언제든 자유롭게</div><div class="step-desc">영어/한글 자막은 언제든 토글 가능. 다음/이전/처음부터 버튼으로 자유롭게 이동하세요.</div></div></div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;margin-bottom:0.75rem;">🏆 발음 점수 기준</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+        <div style="display:flex;align-items:center;gap:10px;"><span style="width:72px;font-weight:700;color:#A32D2D;">⭐ Poor</span><span style="color:var(--muted);">발음 연습이 더 필요합니다</span></div>
+        <div style="display:flex;align-items:center;gap:10px;"><span style="width:72px;font-weight:700;color:#854F0B;">⭐⭐ Fair</span><span style="color:var(--muted);">기초는 있으나 개선 필요</span></div>
+        <div style="display:flex;align-items:center;gap:10px;"><span style="width:72px;font-weight:700;color:#185FA5;">⭐⭐⭐ Good</span><span style="color:var(--muted);">괜찮은 발음입니다!</span></div>
+        <div style="display:flex;align-items:center;gap:10px;"><span style="width:72px;font-weight:700;color:#3B6D11;">⭐⭐⭐⭐ Great</span><span style="color:var(--muted);">훌륭한 발음입니다!</span></div>
+        <div style="display:flex;align-items:center;gap:10px;"><span style="width:72px;font-weight:700;color:#534AB7;">🏆 Excellent</span><span style="color:var(--muted);">원어민 수준입니다!</span></div>
+      </div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:0.5rem;">매일 15분, 3개월이면 달라집니다 💪</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.7;">발음은 근육입니다. 매일 써야 늡니다.<br><strong>by Jay Han</strong></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let episodes=[],curEp=0,curS=0,phase=0;
+let showEng=false,showKor=false;
+let shadowCount=0,recording=false;
+let mediaRec=null,recChunks=[],recStartTime=0;
+let currentAudio=null,countdownTimer=null;
+
+const GRADES=[
+  {grade:'⭐ Poor',    emoji:'😅',cls:'grade-poor',   bar:'bar-poor',   pct:15, tips:['천천히 반복 연습하세요','원어민 음성을 더 많이 들으세요','포기하지 마세요! 계속하면 늡니다']},
+  {grade:'⭐⭐ Fair',   emoji:'🙂',cls:'grade-fair',   bar:'bar-fair',   pct:38, tips:['억양 패턴을 따라해 보세요','강세 위치를 확인하세요','조금만 더 하면 Good!']},
+  {grade:'⭐⭐⭐ Good',  emoji:'😊',cls:'grade-good',   bar:'bar-good',   pct:60, tips:['좋은 발음입니다!','연음 연결에 집중해 보세요','계속 유지하세요!']},
+  {grade:'⭐⭐⭐⭐ Great',emoji:'😄',cls:'grade-great',  bar:'bar-great',  pct:80, tips:['훌륭합니다!','자연스러운 억양이 나오고 있어요','Excellent 도전해 보세요!']},
+  {grade:'🏆 Excellent',emoji:'🎉',cls:'grade-excellent',bar:'bar-excellent',pct:97,tips:['원어민 수준입니다!','완벽한 발음이에요!','정말 대단합니다!']},
+];
+
+async function init(){
+  const now=new Date();
+  document.getElementById('today-date').textContent=
+    now.toLocaleDateString('ko-KR',{month:'long',day:'numeric'});
+  try{
+    const res=await fetch('episodes.json');
+    if(!res.ok) throw new Error();
+    episodes=await res.json();
+    document.getElementById('loading').style.display='none';
+    document.getElementById('learn-content').style.display='block';
+    loadEpisode(0);
+  }catch(e){
+    document.getElementById('loading').style.display='none';
+    document.getElementById('error-view').style.display='block';
+  }
+}
+
+function loadEpisode(idx){curEp=idx;curS=0;loadSentence();}
+
+function loadSentence(){
+  stopAudio();stopCountdown();stopRec();
+  phase=0;shadowCount=0;showEng=false;showKor=false;
+  const ep=episodes[curEp];
+  const s=ep.sentences[curS];
+  document.getElementById('ep-title').textContent=ep.title;
+  document.getElementById('ep-date').textContent=ep.date_kr;
+  document.getElementById('ep-count').textContent=ep.sentences.length+'문장';
+  document.getElementById('snum').textContent='문장 '+(curS+1);
+  document.getElementById('eng').textContent=s.en;
+  document.getElementById('kor').textContent=s.kr;
+  document.getElementById('eng').className='eng blur';
+  document.getElementById('kor').className='kor blur';
+  document.getElementById('btn-eng').classList.remove('on');
+  document.getElementById('btn-kor').classList.remove('on');
+  document.getElementById('rep-row').style.display='none';
+  document.getElementById('score-wrap').style.display='none';
+  document.getElementById('countdown').textContent='';
+  document.getElementById('replay-btn').disabled=true;
+  document.getElementById('rec-btn').disabled=true;
+  document.getElementById('prev-btn').disabled=curS===0&&curEp===0;
+  document.getElementById('main-btn').disabled=false;
+  document.getElementById('main-btn').onclick=handleMain;
+  setMainBtn('▶','시작');
+  setBanner('▶ 시작 버튼을 눌러주세요','phase-listen');
+  updateProg();updateRep();
+  setStatus('▶ 시작 버튼을 눌러주세요');
+}
+
+function restartSentence(){loadSentence();}
+
+function toggleEng(){
+  showEng=!showEng;
+  document.getElementById('eng').className='eng'+(showEng?'':' blur');
+  document.getElementById('btn-eng').classList.toggle('on',showEng);
+}
+
+function toggleKor(){
+  showKor=!showKor;
+  document.getElementById('kor').className='kor'+(showKor?'':' blur');
+  document.getElementById('btn-kor').classList.toggle('on',showKor);
+}
+
+function setBanner(label,cls){
+  const b=document.getElementById('phase-banner');
+  b.textContent=label;b.className='phase-banner '+(cls||'phase-listen');
+}
+
+async function handleMain(){
+  if(phase===0){
+    phase=1;
+    setBanner('👂 1단계 — 듣기 (자막 없이)','phase-listen');
+    setMainBtn('⏸','재생중');
+    setStatus('집중해서 들으세요... 자막 없이!','go');
+    document.getElementById('replay-btn').disabled=false;
+    await playAudio(()=>setTimeout(()=>goPhase2(),500));
+  } else if(phase===3){
+    goPhase4();
+  }
+}
+
+async function goPhase2(){
+  phase=2;
+  setBanner('👁 2단계 — 영어 자막 확인','phase-listen');
+  showEng=true;
+  document.getElementById('eng').className='eng';
+  document.getElementById('btn-eng').classList.add('on');
+  setStatus('영어 자막을 확인하며 다시 들으세요','go');
+  setMainBtn('⏸','재생중');
+  await playAudio(()=>setTimeout(()=>goPhase3(),600));
+}
+
+function goPhase3(){
+  phase=3;
+  setBanner('🇰🇷 3단계 — 한글 번역 확인','phase-kor');
+  showKor=true;
+  document.getElementById('kor').className='kor';
+  document.getElementById('btn-kor').classList.add('on');
+  setStatus('한글 번역으로 의미를 확인하세요','ok');
+  setMainBtn('▶','따라하기 시작');
+  startCountdown(5,()=>goPhase4());
+}
+
+function goPhase4(){
+  stopCountdown();
+  phase=4;
+  setBanner('🎙 4단계 — 따라하기 (3회)','phase-shadow');
+  shadowCount=0;
+  document.getElementById('rep-row').style.display='flex';
+  document.getElementById('score-wrap').style.display='none';
+  document.getElementById('rec-btn').disabled=false;
+  document.getElementById('countdown').textContent='';
+  setMainBtn('🎙','녹음 시작');
+  setStatus('🎙 녹음 버튼을 누르고 크게 따라 말하세요! (1/3)','rec');
+  updateRep();
+  document.getElementById('main-btn').onclick=handleRec;
+}
+
+function goPhase5(){
+  phase=5;
+  setBanner('✅ 완료! 다음 문장으로 이동하세요','phase-done');
+  document.getElementById('main-btn').disabled=true;
+  document.getElementById('rec-btn').disabled=true;
+  const ep=episodes[curEp];
+  if(curS===ep.sentences.length-1&&curEp===episodes.length-1){
+    setStatus('🎉 모든 에피소드 완료! 정말 수고하셨습니다!','ok');
+  } else {
+    setStatus('🎉 완료! 다음 버튼으로 이동하세요','ok');
+  }
+}
+
+function skipPhase(){
+  stopAudio();stopCountdown();stopRec();
+  if(phase<4) goPhase4();
+  else goPhase5();
+}
+
+async function playAudio(onEnd){
+  stopAudio();
+  const ep=episodes[curEp];
+  const path=`${ep.audio_dir}/s${String(curS+1).padStart(2,'0')}.mp3`;
+  return new Promise(resolve=>{
+    currentAudio=new Audio(path);
+    currentAudio.onended=()=>{currentAudio=null;if(onEnd)onEnd();resolve();};
+    currentAudio.onerror=()=>{currentAudio=null;setStatus('오디오 파일 오류','warn');if(onEnd)onEnd();resolve();};
+    currentAudio.play().catch(()=>{setStatus('재생 오류. 화면을 한 번 탭 후 다시 시도하세요','warn');if(onEnd)onEnd();resolve();});
+  });
+}
+
+function replayAudio(){if(phase>=1){stopAudio();setStatus('다시 재생 중...','go');playAudio(null);}}
+function stopAudio(){if(currentAudio){currentAudio.pause();currentAudio=null;}}
+
+async function readAll(){
+  stopAudio();
+  const ep=episodes[curEp];
+
+  // 전체읽기 모드 UI 설정
+  document.getElementById('eng').className='eng';
+  document.getElementById('kor').className='kor blur';
+  document.getElementById('btn-eng').classList.add('on');
+  document.getElementById('btn-kor').classList.remove('on');
+  setBanner('📋 전체 듣기 — 영어 자막 따라읽기','phase-listen');
+  setStatus('전체 대사를 영어 자막과 함께 재생합니다...','go');
+
+  for(let i=0;i<ep.sentences.length;i++){
+    // 현재 문장 번호 표시
+    document.getElementById('snum').textContent='문장 '+(i+1);
+    document.getElementById('eng').textContent=ep.sentences[i].en;
+    document.getElementById('kor').textContent=ep.sentences[i].kr;
+
+    // 진행바 업데이트
+    const pct=Math.round((i/ep.sentences.length)*100);
+    document.getElementById('prog-txt').textContent='문장 '+(i+1)+' / '+ep.sentences.length;
+    document.getElementById('prog-pct').textContent=pct+'%';
+    document.getElementById('prog-fill').style.width=pct+'%';
+
+    setStatus(`재생 중 — 문장 ${i+1} / ${ep.sentences.length}`,'go');
+
+    const path=`${ep.audio_dir}/s${String(i+1).padStart(2,'0')}.mp3`;
+    await new Promise(resolve=>{
+      const a=new Audio(path);
+      a.onended=resolve;a.onerror=resolve;
+      a.play().catch(resolve);
+      currentAudio=a;
+    });
+
+    // 문장 사이 짧은 간격
+    await new Promise(r=>setTimeout(r,400));
+  }
+
+  // 완료
+  document.getElementById('prog-fill').style.width='100%';
+  document.getElementById('prog-pct').textContent='100%';
+  setBanner('✅ 전체 듣기 완료!','phase-done');
+  setStatus('전체 읽기 완료! 수고하셨습니다 🎉','ok');
+}
+
+function showScore(duration){
+  // 녹음 시간 기반 점수 (너무 짧거나 길면 낮은 점수)
+  const ep=episodes[curEp];
+  const s=ep.sentences[curS];
+  const wordCount=s.en.split(' ').length;
+  const expectedMs=wordCount*350; // 단어당 약 350ms
+  const ratio=duration/expectedMs;
+  let idx;
+  if(ratio<0.3||ratio>2.5) idx=0;
+  else if(ratio<0.5||ratio>2.0) idx=1;
+  else if(ratio<0.7||ratio>1.5) idx=2;
+  else if(ratio<0.85||ratio>1.3) idx=3;
+  else idx=4;
+  // 약간의 랜덤 요소 (±1단계)
+  const rand=Math.random();
+  if(rand<0.2&&idx>0) idx--;
+  else if(rand>0.8&&idx<4) idx++;
+
+  const g=GRADES[idx];
+  const tip=g.tips[Math.floor(Math.random()*g.tips.length)];
+  const sw=document.getElementById('score-wrap');
+  sw.style.display='block';
+  document.getElementById('score-grade').textContent=g.grade+' '+g.emoji;
+  document.getElementById('score-grade').className='score-grade '+g.cls;
+  document.getElementById('score-label').textContent='발음 점수';
+  document.getElementById('score-tip').textContent=tip;
+  const bar=document.getElementById('score-bar');
+  bar.className='score-bar '+g.bar;
+  bar.style.width='0%';
+  setTimeout(()=>{bar.style.width=g.pct+'%';},100);
+}
+
+function handleRec(){
+  if(recording){if(mediaRec)mediaRec.stop();return;}
+  if(!navigator.mediaDevices){setStatus('마이크를 사용할 수 없습니다','warn');return;}
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    recording=true;recChunks=[];recStartTime=Date.now();
+    mediaRec=new MediaRecorder(stream);
+    mediaRec.ondataavailable=e=>{if(e.data.size>0)recChunks.push(e.data);};
+    mediaRec.onstop=()=>{
+      recording=false;
+      const duration=Date.now()-recStartTime;
+      stream.getTracks().forEach(t=>t.stop());
+      const blob=new Blob(recChunks,{type:'audio/webm'});
+      new Audio(URL.createObjectURL(blob)).play();
+      showScore(duration);
+      shadowCount++;updateRep();
+      document.getElementById('rec-btn').classList.remove('rec-on');
+      document.getElementById('rec-btn').textContent='🎙';
+      setMainBtn('🎙','녹음 시작');
+      document.getElementById('main-btn').onclick=handleRec;
+      if(shadowCount>=3){setTimeout(()=>goPhase5(),2000);setStatus('3회 완료! 🎉','ok');}
+      else{setStatus(`🎙 한 번 더! (${shadowCount+1}/3)`,'rec');}
+    };
+    mediaRec.start();
+    document.getElementById('rec-btn').classList.add('rec-on');
+    document.getElementById('rec-btn').textContent='⏹';
+    document.getElementById('score-wrap').style.display='none';
+    setMainBtn('⏹','녹음 중지');
+    document.getElementById('main-btn').onclick=handleRec;
+    setStatus(`🔴 녹음 중... 크게 따라 읽으세요! (${shadowCount+1}/3)`,'rec');
+  }).catch(()=>setStatus('마이크 권한이 필요합니다','warn'));
+}
+
+function stopRec(){
+  if(recording&&mediaRec){try{mediaRec.stop();}catch(e){}}
+  recording=false;
+  document.getElementById('rec-btn').classList.remove('rec-on');
+}
+
+function startCountdown(sec,onDone){
+  stopCountdown();let remaining=sec;
+  document.getElementById('countdown').textContent=remaining;
+  countdownTimer=setInterval(()=>{
+    remaining--;
+    if(remaining<=0){stopCountdown();if(onDone)onDone();}
+    else{document.getElementById('countdown').textContent=remaining;}
+  },1000);
+}
+
+function stopCountdown(){
+  if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null;}
+  document.getElementById('countdown').textContent='';
+}
+
+function prevS(){
+  if(curS>0){curS--;loadSentence();}
+  else if(curEp>0){curEp--;curS=episodes[curEp].sentences.length-1;loadSentence();}
+}
+
+function nextS(){
+  const ep=episodes[curEp];
+  if(curS<ep.sentences.length-1){curS++;loadSentence();}
+  else if(curEp<episodes.length-1){curEp++;curS=0;loadSentence();}
+}
+
+function updateProg(){
+  const ep=episodes[curEp];
+  const total=ep.sentences.length;
+  const pct=Math.round((curS/total)*100);
+  document.getElementById('prog-txt').textContent='문장 '+(curS+1)+' / '+total;
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+}
+
+function updateRep(){
+  for(let i=0;i<3;i++){
+    const d=document.getElementById('rd'+i);
+    d.className='rd';
+    if(i<shadowCount)d.classList.add('ok');
+    else if(i===shadowCount&&recording)d.classList.add('on');
+    d.textContent=i+1;
+  }
+}
+
+function setStatus(msg,cls){
+  const el=document.getElementById('status');
+  el.textContent=msg;el.className='status'+(cls?' '+cls:'');
+}
+
+function setMainBtn(icon,lbl){
+  document.getElementById('main-icon').textContent=icon;
+  document.getElementById('main-lbl').textContent=lbl;
+  document.getElementById('main-btn').disabled=false;
+}
+
+function showTab(t){
+  ['learn','list','guide'].forEach(id=>{
+    document.getElementById('view-'+id).style.display=id===t?'block':'none';
+    document.getElementById('tab-'+id).classList.toggle('active',id===t);
+  });
+  if(t==='list')renderEpList();
+}
+
+function renderEpList(){
+  if(!episodes.length)return;
+  document.getElementById('ep-list').innerHTML=episodes.map((ep,i)=>`
+    <div class="ep-item ${i===curEp?'cur':''}" onclick="selectEp(${i})">
+      <div class="ep-item-date">${ep.date_kr}</div>
+      <div class="ep-item-title">${ep.title}</div>
+      <div class="ep-item-meta">${ep.sentences.length}문장 · 약 15분</div>
+    </div>`).join('');
+}
+
+function selectEp(i){loadEpisode(i);showTab('learn');}
+
+function doShare(){
+  const url=window.location.href;
+  if(navigator.share){navigator.share({title:'VOA 영어 섀도잉 by Jay Han',text:'🎙 VOA 영어 15분 섀도잉 훈련\nby Jay Han\n'+url,url});}
+  else if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>setStatus('링크 복사됨!','ok'));}
+}
+
+init();
+</script>
+</body>
+</html>

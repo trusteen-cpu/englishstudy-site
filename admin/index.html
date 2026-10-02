@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>마스터 영어 · 코드 발급</title>
+<style>
+body{margin:0;background:#EEF1EC;color:#16241F;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;padding:24px 16px}
+.box{max-width:640px;margin:0 auto;background:#FBFCF9;border-radius:16px;padding:22px;box-shadow:0 10px 24px -14px rgba(22,36,31,.35)}
+h1{margin:0 0 4px;font-size:22px}p.s{margin:0 0 18px;color:#4A5A53;font-size:14px}
+label{display:block;font-weight:700;font-size:14px;margin:12px 0 6px}
+input,select{width:100%;box-sizing:border-box;font:inherit;font-size:15px;padding:10px 12px;border:1.5px solid #CBD4CE;border-radius:10px;background:#fff}
+button{font:inherit;font-weight:700;font-size:15px;border:0;border-radius:10px;padding:11px 16px;cursor:pointer;background:#16241F;color:#fff;margin-top:14px}
+.out{margin-top:16px;padding:14px;border:2px dashed #2F6B57;border-radius:12px;display:none}
+.code{font-family:Consolas,monospace;font-size:26px;font-weight:700;letter-spacing:.08em}
+.mail{white-space:pre-wrap;background:#EEF1EC;border-radius:8px;padding:10px;font-size:13.5px;margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}td,th{border-bottom:1px solid #CBD4CE;padding:6px 4px;text-align:left}
+.err{color:#D8573C;font-size:14px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>🎟️ 접속 코드 발급</h1>
+  <p class="s">입금을 확인한 뒤, 교재를 고르고 코드를 만들어 손님 이메일로 보내 주세요.</p>
+  <label>관리자 열쇠 <small>(이 브라우저에 기억됩니다)</small></label>
+  <input id="key" type="password" autocomplete="off">
+  <label>교재</label>
+  <select id="app">
+    <option value="voa">VOA 섀도잉</option>
+    <option value="words-1000-mid">중급 영단어 1000</option>
+    <option value="words-1000-basic">초급 영단어 1000</option>
+    <option value="words-2000">중상급 영단어 2000</option>
+    <option value="words-5000">영단어 마스터 5000</option>
+  </select>
+  <label>메모 <small>(입금자명·이메일 등)</small></label>
+  <input id="note" placeholder="예) 홍길동 / hong@example.com">
+  <button id="make">코드 만들기</button>
+  <div class="err" id="err"></div>
+  <div class="out" id="out">
+    <div class="code" id="code"></div>
+    <div class="mail" id="mail"></div>
+    <button id="copy">안내 문구 복사</button>
+  </div>
+  <h1 style="font-size:17px;margin-top:26px">최근 발급한 코드</h1>
+  <button id="load">목록 보기</button>
+  <table id="list"></table>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+try { $("key").value = localStorage.getItem("me.admin") || ""; } catch (e) {}
+const NAMES = Object.fromEntries([...$("app").options].map(o => [o.value, o.text]));
+async function api(path, body) {
+  try { localStorage.setItem("me.admin", $("key").value); } catch (e) {}
+  const r = await fetch(path, { method: body ? "POST" : "GET", headers: { "content-type": "application/json", "X-Admin-Key": $("key").value }, body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || "실패"); return d;
+}
+$("make").onclick = async () => {
+  $("err").textContent = "";
+  try {
+    const d = await api("/api/admin/code", { app: $("app").value, note: $("note").value });
+    $("code").textContent = d.code;
+    $("mail").textContent =
+`안녕하세요, 마스터 영어입니다. 입금 확인되었습니다. 감사합니다.
+
+교재: ${NAMES[d.app]}
+접속 코드: ${d.code}
+
+englishstudy.kr 에서 교재를 열면 코드를 묻습니다. 위 코드를 넣으시면 됩니다.
+코드 하나로 기기 3대까지 쓸 수 있습니다.`;
+    $("out").style.display = "block"; $("note").value = "";
+  } catch (e) { $("err").textContent = e.message; }
+};
+$("copy").onclick = () => navigator.clipboard.writeText($("mail").textContent).then(() => $("copy").textContent = "복사됨 ✓");
+$("load").onclick = async () => {
+  $("err").textContent = "";
+  try {
+    const rows = await api("/api/admin/list");
+    $("list").innerHTML = "<tr><th>코드</th><th>교재</th><th>메모</th><th>기기</th><th>만든 날</th></tr>" +
+      rows.map(r => `<tr><td>${r.code}</td><td>${NAMES[r.app] || r.app}</td><td>${(r.note || "").replace(/</g, "&lt;")}</td><td>${r.devices}</td><td>${new Date(r.created).toLocaleDateString("ko-KR")}</td></tr>`).join("");
+  } catch (e) { $("err").textContent = e.message; }
+};
+</script>
+</body>
+</html>
