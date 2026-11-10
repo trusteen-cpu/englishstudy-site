@@ -2,3 +2,13 @@
 node_modules
 .wrangler
 _texts.json
+
+
+# secrets - never commit
+.env
+.env.*
+*.key
+*_key.txt
+*_keys.json
+eleven_key.txt
+r2_keys.json
